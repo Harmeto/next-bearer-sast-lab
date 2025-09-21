@@ -21,7 +21,9 @@ export default function AdaptiveScanner() {
 
   useEffect(() => {
     // Detectar si estamos en un entorno local
-    setIsLocal(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const hostname = window.location.hostname;
+    const isLocalEnv = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost');
+    setIsLocal(isLocalEnv);
   }, []);
 
   const handleScan = async () => {

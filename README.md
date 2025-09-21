@@ -74,9 +74,16 @@ Un laboratorio interactivo para aprender análisis de seguridad estático (SAST)
 ### GitHub Pages
 El proyecto está configurado para desplegarse automáticamente en GitHub Pages:
 
-1. **Habilita GitHub Pages** en la configuración del repositorio
-2. **Selecciona la rama `main`** como fuente
-3. **El despliegue es automático** con cada push
+1. **Habilita GitHub Pages** en la configuración del repositorio:
+   - Ve a Settings → Pages
+   - En "Source" selecciona "GitHub Actions"
+   - Guarda los cambios
+
+2. **El despliegue es automático** con cada push a la rama `main`
+
+3. **URL del sitio**: https://harmeto.github.io/next-bearer-sast-lab/
+
+**Nota**: En GitHub Pages, el scanner funciona en modo simulación ya que Bearer CLI no está disponible en el entorno de GitHub Pages. Para escaneo real, ejecuta el proyecto localmente.
 
 ### Vercel
 ```bash
