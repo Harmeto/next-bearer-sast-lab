@@ -2,6 +2,11 @@
   "name": "next-bearer-sast-lab",
   "private": true,
   "type": "module",
+  "version": "0.1.0",
+  "description": "Laboratorio de Análisis de Seguridad Estático con Bearer CLI",
+  "main": "index.js",
+  "author": "Bearer CLI Lab",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
