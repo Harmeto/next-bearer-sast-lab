@@ -24,7 +24,7 @@ export default function ReportsPage() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/reports');
+      const response = await fetch('/next-bearer-sast-lab/api/reports');
       const data = await response.json();
       
       if (data.success) {

@@ -10,22 +10,9 @@ export async function GET(req: NextRequest) {
     const reportId = searchParams.get('id');
     
     if (reportId) {
-      // Servir un reporte específico
-      const reportPath = join(process.cwd(), 'public', 'reports', `${reportId}.html`);
-      
-      try {
-        const fs = await import('node:fs');
-        const html = fs.readFileSync(reportPath, 'utf-8');
-        return new NextResponse(html, {
-          headers: {
-            'Content-Type': 'text/html',
-          },
-        });
-      } catch (error) {
-        return NextResponse.json({ 
-          error: "Reporte no encontrado" 
-        }, { status: 404 });
-      }
+      // Para GitHub Pages, redirigir al archivo estático
+      const reportUrl = `/next-bearer-sast-lab/reports/${reportId}.html`;
+      return NextResponse.redirect(new URL(reportUrl, req.url));
     }
     
     // Listar todos los reportes disponibles
@@ -45,7 +32,7 @@ export async function GET(req: NextRequest) {
             size: stats.size,
             created: stats.birthtime,
             modified: stats.mtime,
-            url: `/api/reports?id=${reportId}`
+            url: `/next-bearer-sast-lab/api/reports?id=${reportId}`
           };
         })
         .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
