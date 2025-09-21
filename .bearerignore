@@ -36,3 +36,6 @@ pnpm-lock.yaml
 # Ignore OS files
 .DS_Store
 Thumbs.db
+
+# No ignorar los ejemplos de vulnerabilidades para testing
+!examples/

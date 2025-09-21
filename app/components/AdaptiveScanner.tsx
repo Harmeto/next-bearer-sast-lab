@@ -105,12 +105,13 @@ export default function AdaptiveScanner() {
           isLocal: true
         });
       } else {
-        // Para GitHub Pages, abrir el reporte en la página de Next.js
-        window.open('/report', '_blank');
+        // Para GitHub Pages, abrir el reporte estático directamente
+        const reportUrl = '/next-bearer-sast-lab/project-scan-report.html';
+        window.open(reportUrl, '_blank');
         setResult({
           success: true,
           message: "Reporte de seguridad del proyecto abierto en nueva ventana",
-          reportUrl: '/report',
+          reportUrl: reportUrl,
           command: `bearer scan . --format html --output project-scan-report.html`,
           isLocal: false,
           isTriggered: false,
@@ -158,7 +159,7 @@ export default function AdaptiveScanner() {
           newWindow.document.close();
         }
       } else {
-        // Para GitHub Pages, abrir documentación
+        // Para GitHub Pages, abrir el reporte estático
         window.open(result.reportUrl, '_blank');
       }
     }

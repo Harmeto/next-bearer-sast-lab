@@ -99,7 +99,7 @@ export default function ReportPage() {
           
           <div className="relative" style={{ height: '80vh' }}>
             <iframe
-              src="/project-scan-report.html"
+              src="/next-bearer-sast-lab/project-scan-report.html"
               className="w-full h-full border-0"
               title="Reporte de Seguridad Bearer CLI"
               onLoad={() => setLoading(false)}

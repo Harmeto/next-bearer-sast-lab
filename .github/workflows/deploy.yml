@@ -36,10 +36,26 @@ jobs:
         with:
           path: '.'
           format: html
-          output: 'public/project-scan-report.html'
+          output: 'reports/$(git rev-parse HEAD).html'
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
           exit-code: 0
+          
+      - name: Move reports to public directory
+        run: |
+          # Crear directorio public/reports si no existe
+          mkdir -p public/reports
+          
+          # Mover todos los reportes de reports/ a public/reports/
+          if [ -d "reports" ]; then
+            cp reports/*.html public/reports/ 2>/dev/null || true
+          fi
+          
+          # Crear reporte principal (el más reciente)
+          if [ -d "public/reports" ] && [ "$(ls -A public/reports/*.html 2>/dev/null)" ]; then
+            LATEST_REPORT=$(ls -t public/reports/*.html | head -n1)
+            cp "$LATEST_REPORT" public/project-scan-report.html
+          fi
           
       - name: Create scan info file
         run: |
@@ -64,7 +80,7 @@ jobs:
           git pull origin main || git pull origin main --allow-unrelated-histories || true
           
           # Add and commit the scan results
-          git add public/project-scan-report.html public/scan-info.json
+          git add public/project-scan-report.html public/scan-info.json public/reports/
           git commit -m "Update security scan report $(date -u +%Y-%m-%dT%H:%M:%SZ)" || exit 0
           
           # Push the changes

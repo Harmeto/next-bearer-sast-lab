@@ -38,10 +38,10 @@ export default function Navigation() {
       description: 'Escanea repositorios'
     },
     {
-      href: '/report',
-      label: 'Reporte',
+      href: '/reports',
+      label: 'Reportes',
       icon: '📊',
-      description: 'Ver reporte de seguridad'
+      description: 'Ver todos los reportes'
     },
     {
       href: '/comparison',
