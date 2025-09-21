@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Seguridad - Bearer CLI Lab</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e0e0e0; }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Reporte de Seguridad - Bearer CLI Lab</h1>
+            <p><strong>Repositorio:</strong> https://github.com/Harmeto/next-bearer-sast-lab</p>
+            <p><strong>Rama:</strong> main</p>
+            <p><strong>Fecha:</strong> <span id="scanDate">Cargando...</span></p>
+        </div>
+        <div class="loading">
+            <div class="spinner"></div>
+            <h3>⏳ Cargando Reporte de Seguridad</h3>
+            <p>El reporte se está cargando automáticamente...</p>
+        </div>
+        <div id="reportContent" style="display: none;"></div>
+    </div>
+    
+    <script>
+        // Cargar el reporte de seguridad
+        fetch('/project-scan-report.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('reportContent').innerHTML = html;
+                document.getElementById('reportContent').style.display = 'block';
+                document.querySelector('.loading').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error loading report:', error);
+                document.querySelector('.loading').innerHTML = '<h3>❌ Error al cargar el reporte</h3><p>No se pudo cargar el reporte de seguridad. Por favor, recarga la página.</p>';
+            });
+        
+        // Actualizar la fecha
+        document.getElementById('scanDate').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
