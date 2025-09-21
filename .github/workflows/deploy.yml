@@ -3,16 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
-    inputs:
-      repo_url:
-        description: 'Repository URL to scan'
-        required: true
-        default: 'https://github.com/Harmeto/menv_auth'
-      branch:
-        description: 'Branch to scan'
-        required: false
-        default: 'master'
 
 permissions:
   contents: read
@@ -24,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  scan-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,6 +29,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Run Bearer Security Scan on project
+        uses: bearer/bearer-action@v2
+        with:
+          path: '.'
+          format: html
+          output: 'public/project-scan-report.html'
+          scanner: sast,secrets
+          severity: critical,high,medium,low,warning
+          exit-code: 0
+          
+      - name: Create scan info file
+        run: |
+          cat > public/scan-info.json << EOF
+          {
+            "repoUrl": "https://github.com/Harmeto/next-bearer-sast-lab",
+            "branch": "main",
+            "scanDate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "status": "completed",
+            "type": "project"
+          }
+          EOF
+        
       - name: Build
         run: npm run build
         env:
@@ -52,36 +64,12 @@ jobs:
         with:
           path: ./out
 
-  scan-demo:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Run Bearer Security Scan
-        uses: bearer/bearer-action@v2
-        with:
-          path: '.'
-          format: html
-          output: 'public/demo-scan-report.html'
-          scanner: sast,secrets
-          severity: critical,high,medium,low,warning
-          
-      - name: Commit and push scan results
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add public/demo-scan-report.html
-          git commit -m "Update demo scan report" || exit 0
-          git push
-
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: scan-and-build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

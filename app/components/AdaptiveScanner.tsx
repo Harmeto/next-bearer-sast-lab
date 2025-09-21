@@ -27,6 +27,40 @@ export default function AdaptiveScanner() {
     setIsLocal(isLocalEnv);
   }, []);
 
+  const pollForReport = async () => {
+    const maxAttempts = 30; // 5 minutos máximo
+    let attempts = 0;
+    
+    const poll = async () => {
+      try {
+        const response = await fetch('/api/scan-report?type=scan');
+        if (response.ok) {
+          const data = await response.json();
+          setResult({
+            success: true,
+            message: "Escaneo completado exitosamente",
+            reportUrl: data.html ? `data:text/html;base64,${btoa(data.html)}` : undefined,
+            command: `bearer scan ${repoUrl} --format html --output security-report.html`,
+            isLocal: false,
+            isTriggered: false
+          });
+          return;
+        }
+      } catch (error) {
+        console.log('Polling attempt failed:', error);
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(poll, 10000); // Poll cada 10 segundos
+      } else {
+        setError('El escaneo está tomando más tiempo del esperado. Verifica el progreso en GitHub Actions.');
+      }
+    };
+    
+    setTimeout(poll, 10000); // Empezar polling después de 10 segundos
+  };
+
   const handleScan = async () => {
     setLoading(true);
     setError(null);
@@ -80,6 +114,9 @@ export default function AdaptiveScanner() {
               isLocal: false,
               isTriggered: true
             });
+            
+            // Polling para verificar cuando el reporte esté listo
+            pollForReport();
             return;
           }
         } catch (error) {

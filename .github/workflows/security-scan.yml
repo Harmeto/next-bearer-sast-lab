@@ -1,0 +1,60 @@
+name: Security Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'Repository URL to scan'
+        required: true
+        default: 'https://github.com/Harmeto/menv_auth'
+      branch:
+        description: 'Branch to scan'
+        required: false
+        default: 'master'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Clone target repository
+        run: |
+          git clone --depth=1 --branch ${{ github.event.inputs.branch || 'master' }} ${{ github.event.inputs.repo_url }} target-repo
+          
+      - name: Run Bearer Security Scan
+        uses: bearer/bearer-action@v2
+        with:
+          path: './target-repo'
+          format: html
+          output: 'public/scan-report.html'
+          scanner: sast,secrets
+          severity: critical,high,medium,low,warning
+          exit-code: 0
+          
+      - name: Create scan info file
+        run: |
+          cat > public/scan-info.json << EOF
+          {
+            "repoUrl": "${{ github.event.inputs.repo_url }}",
+            "branch": "${{ github.event.inputs.branch || 'master' }}",
+            "scanDate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "status": "completed"
+          }
+          EOF
+          
+      - name: Commit and push scan results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/scan-report.html public/scan-info.json
+          git commit -m "Update security scan report for ${{ github.event.inputs.repo_url }}" || exit 0
+          git push

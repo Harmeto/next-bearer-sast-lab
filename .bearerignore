@@ -1,0 +1,38 @@
+# Ignore common directories
+node_modules/
+.git/
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Ignore test files
+*.test.*
+*.spec.*
+**/__tests__/**
+**/test/**
+
+# Ignore generated files
+*.min.js
+*.min.css
+*.bundle.js
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore environment files
+.env*
+!.env.example
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

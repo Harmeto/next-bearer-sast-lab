@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Trigger GitHub Actions workflow
-    const response = await fetch(`https://api.github.com/repos/Harmeto/next-bearer-sast-lab/actions/workflows/deploy.yml/dispatches`, {
+    const response = await fetch(`https://api.github.com/repos/Harmeto/next-bearer-sast-lab/actions/workflows/security-scan.yml/dispatches`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
