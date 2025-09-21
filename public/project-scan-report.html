@@ -261,7 +261,7 @@ span.warning{
 			<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 				<path fill-rule="evenodd" clip-rule="evenodd" d="M14.6087 2H12.6957C12.5996 2 12.5217 1.92539 12.5217 1.83334V0.666672C12.5217 0.298482 12.2103 5.02085e-06 11.8261 5.02085e-06C11.4419 5.02085e-06 11.1304 0.298482 11.1304 0.666672V3.83334C11.1304 4.10948 10.8968 4.33334 10.6087 4.33334C10.3205 4.33334 10.087 4.10948 10.087 3.83334V2.33334C10.087 2.14924 9.93123 2 9.73913 2H5.3913C5.29553 2.00001 5.21777 1.92579 5.21739 1.834V0.666672V0.666667C5.21739 0.298477 4.90594 0 4.52174 0C4.13754 0 3.82609 0.298477 3.82609 0.666667C3.82609 0.66667 3.82609 0.666673 3.82609 0.666677V3.83334C3.82609 4.10949 3.5925 4.33334 3.30435 4.33334C3.0162 4.33334 2.78261 4.10949 2.78261 3.83334V2.33334C2.78261 2.14924 2.62688 2 2.43478 2H1.3913C0.622908 2 0 2.59696 0 3.33334V14.6667H0C-1.16024e-07 15.403 0.622908 16 1.3913 16H14.6087C15.3771 16 16 15.403 16 14.6667V3.33334C16 2.59696 15.3771 2 14.6087 2V2ZM14.2608 14.6667H1.73905C1.54695 14.6667 1.39123 14.5174 1.39123 14.3333V6.33333V6.33334C1.39123 6.14924 1.54695 6 1.73905 6H14.2608C14.4529 6 14.6086 6.14924 14.6086 6.33334V14.3333C14.6086 14.5174 14.4529 14.6667 14.2608 14.6667Z" fill="#272727"/>
 			</svg>
-			<span>September 21 2025, 18:01:49 pm (UTC+0000)</span>
+			<span>September 21 2025, 18:09:34 pm (UTC+0000)</span>
 		</p>
 			<div id="result-summary">
     <span class="badge critical critical-bg">C</span>
@@ -271,7 +271,7 @@ span.warning{
     <span class="badge medium medium-bg">M</span>
     <span class="medium">0</span>
     <span class="badge low low-bg">L</span>
-    <span class="low">10</span>
+    <span class="low">9</span>
     <span class="badge warning warning-bg">W</span>
     <span class="warning">0</span>
 	</div>
@@ -408,8 +408,8 @@ cp.exec(`cp ${filePattern} foo`, (error, stdout, stderr) =&gt; {});
             </span>
           </div>
 
-          <p class="filename">Filename: app/api/scan-report/route.ts:62</p>
-          <div class="term-container"> 62         console.error(&#39;Error parsing scan info:&#39;, error);</div>
+          <p class="filename">Filename: app/api/scan-report/route.ts:61</p>
+          <div class="term-container"> 61         console.error(&#39;Error parsing scan info:&#39;, error);</div>
         </summary>
 				<div class="description"><h4>Description</h2>
 
@@ -440,8 +440,8 @@ cp.exec(`cp ${filePattern} foo`, (error, stdout, stderr) =&gt; {});
             </span>
           </div>
 
-          <p class="filename">Filename: app/api/scan-report/route.ts:90</p>
-          <div class="term-container"> 90     console.error(&#39;Error in scan-report API:&#39;, err);</div>
+          <p class="filename">Filename: app/api/scan-report/route.ts:89</p>
+          <div class="term-container"> 89     console.error(&#39;Error in scan-report API:&#39;, err);</div>
         </summary>
 				<div class="description"><h4>Description</h2>
 
@@ -538,38 +538,6 @@ cp.exec(`cp ${filePattern} foo`, (error, stdout, stderr) =&gt; {});
 
           <p class="filename">Filename: app/components/AdaptiveScanner.tsx:61</p>
           <div class="term-container"> 61         console.log(&#39;Polling attempt failed:&#39;, error);</div>
-        </summary>
-				<div class="description"><h4>Description</h2>
-
-<p>Information leakage through logger messages can compromise sensitive data. This vulnerability arises when dynamic data or variables, which may contain sensitive information, are included in log messages.</p>
-
-<h4>Remediations</h2>
-
-<ul>
-<li><p><strong>Do not</strong> include sensitive data directly in logger messages. This can lead to the exposure of such data in log files, which might be accessible to unauthorized individuals.</p>
-
-<pre><code class="language-javascript">logger.info(`Results: ${data}`) // unsafe
-</code></pre></li>
-
-<li><p><strong>Do</strong> use logging levels appropriately to control the verbosity of log output and minimize the risk of leaking sensitive information in production environments.</p></li>
-</ul>
-</div>
-			</details>
-		
-			<details class="finding" open>
-        <summary>
-          <div class="head">
-            <h3 class="low">
-              <span>Leakage of information in logger message</span>
-              <span class="badge low low-bg">low</span>
-            </h3>
-            <span class="cwe">
-              <strong>Rule ID:</strong> javascript_lang_logger_leak&nbsp;&nbsp;<strong>CWE:</strong> CWE 532&nbsp;&nbsp;<strong>Fingerprint:</strong> 809b6bb7caec3593e0140afa316e4613_1
-            </span>
-          </div>
-
-          <p class="filename">Filename: app/components/AdaptiveScanner.tsx:128</p>
-          <div class="term-container"> 128           console.error(&#39;Error loading project report:&#39;, error);</div>
         </summary>
 				<div class="description"><h4>Description</h2>
 
