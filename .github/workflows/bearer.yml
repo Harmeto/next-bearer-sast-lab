@@ -1,0 +1,50 @@
+name: Bearer SAST (HTML)
+
+on:
+  push:
+    branches:
+      - "**"
+  create:
+    branches:
+      - "**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    if: github.event_name != 'create' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure reports dir
+        run: mkdir -p reports
+
+      - name: Run Bearer (HTML)
+        uses: bearer/bearer-action@v2
+        with:
+          format: html
+          output: reports/${{ github.sha }}.html
+          scanner: sast,secrets
+          severity: critical,high,medium,low,warning
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bearer-report-${{ github.sha }}
+          path: reports/${{ github.sha }}.html
+
+      - name: Commit report into repo (optional)
+        if: ${{ always() && github.event_name == 'push' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/${{ github.sha }}.html
+          git commit -m "chore(security): Bearer HTML report for ${{ github.sha }} [skip ci]" || echo "No changes"
+          git push

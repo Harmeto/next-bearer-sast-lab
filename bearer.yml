@@ -1,0 +1,14 @@
+report:
+  format: html
+  output: "public/reports/initial.html"
+  report: security
+  severity: "critical,high,medium,low,warning"
+
+scan:
+  scanner:
+    - sast
+    - secrets
+  skip-path:
+    - node_modules
+    - .next
+    - .git
