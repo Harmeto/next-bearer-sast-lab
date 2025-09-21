@@ -10,6 +10,13 @@ interface ScanResult {
   command?: string;
   isLocal?: boolean;
   isTriggered?: boolean;
+  scanInfo?: {
+    repoUrl: string;
+    branch: string;
+    scanDate: string;
+    status: string;
+    type: string;
+  };
   debug?: {
     hasToken: boolean;
     tokenLength: number;
@@ -98,53 +105,30 @@ export default function AdaptiveScanner() {
           isLocal: true
         });
       } else {
-        // Intentar usar GitHub Actions para escaneo real
+        // Obtener el reporte del proyecto que ya existe
         try {
-          const response = await fetch('/api/trigger-scan', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ repoUrl, branch })
-          });
-
-          const data = await response.json();
-          console.log('Trigger scan response:', data);
-
+          const response = await fetch('/api/scan-report?type=project');
+          
           if (response.ok) {
+            const data = await response.json();
             setResult({
               success: true,
-              message: data.message,
-              reportUrl: data.statusUrl,
-              command: `bearer scan ${repoUrl} --format html --output security-report.html`,
+              message: "Reporte de seguridad del proyecto cargado exitosamente",
+              reportUrl: data.html ? `data:text/html;base64,${btoa(data.html)}` : undefined,
+              command: `bearer scan . --format html --output project-scan-report.html`,
               isLocal: false,
-              isTriggered: true,
-              debug: data.debug
+              isTriggered: false,
+              scanInfo: data.scanInfo
             });
-            
-            // Polling para verificar cuando el reporte esté listo
-            pollForReport();
             return;
           } else {
-            throw new Error(data.error || 'Error al activar el escaneo');
+            throw new Error('No se pudo cargar el reporte del proyecto');
           }
         } catch (error) {
-          console.error('API trigger failed:', error);
-          setError(error instanceof Error ? error.message : 'Error al activar el escaneo');
+          console.error('Error loading project report:', error);
+          setError('No se pudo cargar el reporte de seguridad del proyecto. El escaneo puede estar en progreso.');
           return;
         }
-
-        // Fallback a simulación si la API no está disponible
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        setResult({
-          success: true,
-          message: "Escaneo iniciado via GitHub Actions - Verifica el progreso en la pestaña Actions",
-          reportUrl: "https://github.com/Harmeto/next-bearer-sast-lab/actions",
-          command: `bearer scan ${repoUrl} --format html --output security-report.html`,
-          isLocal: false,
-          isTriggered: true
-        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -205,7 +189,7 @@ export default function AdaptiveScanner() {
             <p className="text-sm">
               {isLocal 
                 ? 'Ejecutando escaneo real con Bearer CLI via WSL'
-                : 'Ejecutando escaneo real via GitHub Actions (Bearer CLI en la nube)'
+                : 'Mostrando reporte de seguridad del proyecto (generado automáticamente)'
               }
             </p>
           </div>
@@ -215,67 +199,98 @@ export default function AdaptiveScanner() {
       {/* Scanner Form */}
       <div className="bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Configuración del Escaneo
+          {isLocal ? 'Configuración del Escaneo' : 'Reporte de Seguridad del Proyecto'}
         </h2>
 
-        <div className="space-y-6">
-          {/* Repository URL */}
-          <div>
-            <label htmlFor="repoUrl" className="block text-sm font-medium text-gray-700 mb-2">
-              URL del Repositorio
-            </label>
-            <input
-              type="url"
-              id="repoUrl"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              placeholder="https://github.com/usuario/repositorio"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="mt-1 text-sm text-gray-500">
-              Ingresa la URL completa del repositorio de GitHub
-            </p>
-          </div>
+        {isLocal ? (
+          <div className="space-y-6">
+            {/* Repository URL */}
+            <div>
+              <label htmlFor="repoUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                URL del Repositorio
+              </label>
+              <input
+                type="url"
+                id="repoUrl"
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                placeholder="https://github.com/usuario/repositorio"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                Ingresa la URL completa del repositorio de GitHub
+              </p>
+            </div>
 
-          {/* Branch */}
-          <div>
-            <label htmlFor="branch" className="block text-sm font-medium text-gray-700 mb-2">
-              Rama
-            </label>
-            <input
-              type="text"
-              id="branch"
-              value={branch}
-              onChange={(e) => setBranch(e.target.value)}
-              placeholder="master"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="mt-1 text-sm text-gray-500">
-              Rama específica a escanear (por defecto: master)
-            </p>
-          </div>
+            {/* Branch */}
+            <div>
+              <label htmlFor="branch" className="block text-sm font-medium text-gray-700 mb-2">
+                Rama
+              </label>
+              <input
+                type="text"
+                id="branch"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
+                placeholder="master"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                Rama específica a escanear (por defecto: master)
+              </p>
+            </div>
 
-          {/* Scan Button */}
-          <button
-            onClick={handleScan}
-            disabled={loading || !repoUrl}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {isLocal ? 'Escaneando...' : 'Iniciando escaneo...'}
-              </>
-            ) : (
-              <>
-                🔍 {isLocal ? 'Iniciar Escaneo' : 'Iniciar Escaneo en la Nube'}
-              </>
-            )}
-          </button>
-        </div>
+            {/* Scan Button */}
+            <button
+              onClick={handleScan}
+              disabled={loading || !repoUrl}
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Escaneando...
+                </>
+              ) : (
+                <>
+                  🔍 Iniciar Escaneo
+                </>
+              )}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-800 mb-3">📊 Reporte Automático</h3>
+              <p className="text-blue-700 mb-4">
+                Este proyecto se escanea automáticamente en cada despliegue. 
+                El reporte de seguridad se genera usando Bearer CLI y está disponible aquí.
+              </p>
+              <button
+                onClick={handleScan}
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Cargando reporte...
+                  </>
+                ) : (
+                  <>
+                    📊 Ver Reporte de Seguridad
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Tips */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -284,25 +299,25 @@ export default function AdaptiveScanner() {
             <li>
               {isLocal 
                 ? 'El escaneo real puede tomar de 30 segundos a varios minutos'
-                : 'El escaneo se ejecuta en GitHub Actions y puede tomar 2-5 minutos'
+                : 'El reporte se actualiza automáticamente en cada despliegue'
               }
             </li>
             <li>
               {isLocal 
                 ? 'Los repositorios grandes pueden requerir más tiempo'
-                : 'Puedes seguir el progreso en la pestaña Actions del repositorio'
+                : 'El escaneo incluye análisis SAST y detección de secretos'
               }
             </li>
             <li>
               {isLocal 
                 ? 'El reporte se generará en formato HTML'
-                : 'El reporte se generará y estará disponible en el repositorio'
+                : 'Puedes ver y descargar el reporte completo'
               }
             </li>
             <li>
               {isLocal 
                 ? 'Puedes descargar el reporte una vez completado'
-                : 'El reporte se guardará en el repositorio para descarga'
+                : 'Para escanear otros repositorios, ejecuta el proyecto localmente'
               }
             </li>
           </ul>
@@ -345,7 +360,7 @@ export default function AdaptiveScanner() {
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-green-800">
-                    {result.isLocal ? 'Escaneo Completado' : (result.isTriggered ? 'Escaneo Iniciado' : 'Simulación Completada')}
+                    {result.isLocal ? 'Escaneo Completado' : 'Reporte Cargado'}
                   </h3>
                   <div className="mt-2 text-sm text-green-700">
                     {result.message}
@@ -360,18 +375,30 @@ export default function AdaptiveScanner() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Repositorio:</span>
-                  <span className="font-medium">{repoUrl}</span>
+                  <span className="font-medium">
+                    {result.isLocal ? repoUrl : 'https://github.com/Harmeto/next-bearer-sast-lab'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Rama:</span>
-                  <span className="font-medium">{branch}</span>
+                  <span className="font-medium">
+                    {result.isLocal ? branch : 'main'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tipo:</span>
                   <span className="font-medium">
-                    {result.isLocal ? 'Reporte Real' : (result.isTriggered ? 'Escaneo en Progreso' : 'Simulación')}
+                    {result.isLocal ? 'Reporte Real' : 'Reporte del Proyecto'}
                   </span>
                 </div>
+                {result.scanInfo && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Fecha de escaneo:</span>
+                    <span className="font-medium">
+                      {new Date(result.scanInfo.scanDate).toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -381,13 +408,13 @@ export default function AdaptiveScanner() {
                 onClick={viewReport}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
               >
-                👁️ {result.isLocal ? 'Ver Reporte' : (result.isTriggered ? 'Ver Progreso' : 'Ver Documentación')}
+                👁️ {result.isLocal ? 'Ver Reporte' : 'Ver Reporte del Proyecto'}
               </button>
               <button
                 onClick={downloadReport}
                 className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors duration-200 flex items-center justify-center"
               >
-                📥 {result.isLocal ? 'Descargar Reporte' : (result.isTriggered ? 'Abrir GitHub Actions' : 'Abrir Documentación')}
+                📥 {result.isLocal ? 'Descargar Reporte' : 'Descargar Reporte del Proyecto'}
               </button>
             </div>
 
