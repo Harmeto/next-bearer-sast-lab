@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Seguridad - Bearer CLI Lab</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .status {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Reporte de Seguridad - Bearer CLI Lab</h1>
+            <p><strong>Repositorio:</strong> https://github.com/Harmeto/next-bearer-sast-lab</p>
+            <p><strong>Rama:</strong> main</p>
+            <p><strong>Fecha:</strong> <span id="scanDate">Generando...</span></p>
+        </div>
+        
+        <div class="status">
+            <h3>⏳ Reporte en Progreso</h3>
+            <p>Este reporte se está generando automáticamente. El escaneo de seguridad se ejecuta en cada despliegue del proyecto.</p>
+            <p>El reporte se actualizará automáticamente una vez que se complete el análisis de seguridad con Bearer CLI.</p>
+        </div>
+        
+        <div class="info">
+            <h3>📊 Información del Escaneo</h3>
+            <ul>
+                <li><strong>Herramienta:</strong> Bearer CLI</li>
+                <li><strong>Scanners:</strong> SAST, Secrets Detection</li>
+                <li><strong>Severidades:</strong> Critical, High, Medium, Low, Warning</li>
+                <li><strong>Formato:</strong> HTML</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>🔄 Actualización Automática</h3>
+            <p>Este reporte se actualiza automáticamente cada vez que se hace push al repositorio principal. 
+            Para ver el reporte más reciente, recarga esta página en unos minutos.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Actualizar la fecha actual
+        document.getElementById('scanDate').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>

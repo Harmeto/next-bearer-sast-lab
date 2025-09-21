@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -50,6 +50,14 @@ jobs:
             "type": "project"
           }
           EOF
+          
+      - name: Commit and push scan results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/project-scan-report.html public/scan-info.json
+          git commit -m "Update security scan report $(date -u +%Y-%m-%dT%H:%M:%SZ)" || exit 0
+          git push
         
       - name: Build
         run: npm run build
