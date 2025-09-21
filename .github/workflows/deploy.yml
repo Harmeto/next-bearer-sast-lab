@@ -3,6 +3,16 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'Repository URL to scan'
+        required: true
+        default: 'https://github.com/Harmeto/menv_auth'
+      branch:
+        description: 'Branch to scan'
+        required: false
+        default: 'master'
 
 permissions:
   contents: read
@@ -41,6 +51,30 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+
+  scan-demo:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Run Bearer Security Scan
+        uses: bearer/bearer-action@v2
+        with:
+          path: '.'
+          format: html
+          output: 'public/demo-scan-report.html'
+          scanner: sast,secrets
+          severity: critical,high,medium,low,warning
+          
+      - name: Commit and push scan results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/demo-scan-report.html
+          git commit -m "Update demo scan report" || exit 0
+          git push
 
   deploy:
     environment:

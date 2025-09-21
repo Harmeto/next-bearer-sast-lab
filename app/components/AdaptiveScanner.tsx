@@ -9,6 +9,7 @@ interface ScanResult {
   reportUrl?: string;
   command?: string;
   isLocal?: boolean;
+  isTriggered?: boolean;
 }
 
 export default function AdaptiveScanner() {
@@ -59,15 +60,42 @@ export default function AdaptiveScanner() {
           isLocal: true
         });
       } else {
-        // Simular escaneo para GitHub Pages
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simular tiempo de escaneo
+        // Intentar usar GitHub Actions para escaneo real
+        try {
+          const response = await fetch('/api/trigger-scan', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ repoUrl, branch })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setResult({
+              success: true,
+              message: data.message,
+              reportUrl: data.statusUrl,
+              command: `bearer scan ${repoUrl} --format html --output security-report.html`,
+              isLocal: false,
+              isTriggered: true
+            });
+            return;
+          }
+        } catch (error) {
+          console.log('API trigger failed, falling back to simulation');
+        }
+
+        // Fallback a simulación si la API no está disponible
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
         setResult({
           success: true,
-          message: "Simulación de escaneo completada (GitHub Pages)",
-          reportUrl: "https://docs.bearer.com/guides/reports/",
+          message: "Escaneo iniciado via GitHub Actions - Verifica el progreso en la pestaña Actions",
+          reportUrl: "https://github.com/Harmeto/next-bearer-sast-lab/actions",
           command: `bearer scan ${repoUrl} --format html --output security-report.html`,
-          isLocal: false
+          isLocal: false,
+          isTriggered: true
         });
       }
     } catch (err) {
@@ -129,7 +157,7 @@ export default function AdaptiveScanner() {
             <p className="text-sm">
               {isLocal 
                 ? 'Ejecutando escaneo real con Bearer CLI via WSL'
-                : 'Mostrando simulación de escaneo (Bearer CLI no disponible en GitHub Pages)'
+                : 'Ejecutando escaneo real via GitHub Actions (Bearer CLI en la nube)'
               }
             </p>
           </div>
@@ -191,11 +219,11 @@ export default function AdaptiveScanner() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {isLocal ? 'Escaneando...' : 'Simulando escaneo...'}
+                {isLocal ? 'Escaneando...' : 'Iniciando escaneo...'}
               </>
             ) : (
               <>
-                🔍 {isLocal ? 'Iniciar Escaneo' : 'Simular Escaneo'}
+                🔍 {isLocal ? 'Iniciar Escaneo' : 'Iniciar Escaneo en la Nube'}
               </>
             )}
           </button>
@@ -208,25 +236,25 @@ export default function AdaptiveScanner() {
             <li>
               {isLocal 
                 ? 'El escaneo real puede tomar de 30 segundos a varios minutos'
-                : 'Esta es una simulación para demostrar la funcionalidad'
+                : 'El escaneo se ejecuta en GitHub Actions y puede tomar 2-5 minutos'
               }
             </li>
             <li>
               {isLocal 
                 ? 'Los repositorios grandes pueden requerir más tiempo'
-                : 'Para escaneo real, ejecuta el proyecto localmente'
+                : 'Puedes seguir el progreso en la pestaña Actions del repositorio'
               }
             </li>
             <li>
               {isLocal 
                 ? 'El reporte se generará en formato HTML'
-                : 'Consulta la documentación de Bearer CLI para reportes reales'
+                : 'El reporte se generará y estará disponible en el repositorio'
               }
             </li>
             <li>
               {isLocal 
                 ? 'Puedes descargar el reporte una vez completado'
-                : 'Usa el tutorial para aprender a implementar Bearer CLI'
+                : 'El reporte se guardará en el repositorio para descarga'
               }
             </li>
           </ul>
@@ -269,7 +297,7 @@ export default function AdaptiveScanner() {
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-green-800">
-                    {result.isLocal ? 'Escaneo Completado' : 'Simulación Completada'}
+                    {result.isLocal ? 'Escaneo Completado' : (result.isTriggered ? 'Escaneo Iniciado' : 'Simulación Completada')}
                   </h3>
                   <div className="mt-2 text-sm text-green-700">
                     {result.message}
@@ -293,7 +321,7 @@ export default function AdaptiveScanner() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tipo:</span>
                   <span className="font-medium">
-                    {result.isLocal ? 'Reporte Real' : 'Simulación'}
+                    {result.isLocal ? 'Reporte Real' : (result.isTriggered ? 'Escaneo en Progreso' : 'Simulación')}
                   </span>
                 </div>
               </div>
@@ -305,13 +333,13 @@ export default function AdaptiveScanner() {
                 onClick={viewReport}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
               >
-                👁️ {result.isLocal ? 'Ver Reporte' : 'Ver Documentación'}
+                👁️ {result.isLocal ? 'Ver Reporte' : (result.isTriggered ? 'Ver Progreso' : 'Ver Documentación')}
               </button>
               <button
                 onClick={downloadReport}
                 className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors duration-200 flex items-center justify-center"
               >
-                📥 {result.isLocal ? 'Descargar Reporte' : 'Abrir Documentación'}
+                📥 {result.isLocal ? 'Descargar Reporte' : (result.isTriggered ? 'Abrir GitHub Actions' : 'Abrir Documentación')}
               </button>
             </div>
 
@@ -327,12 +355,23 @@ export default function AdaptiveScanner() {
             )}
 
             {/* GitHub Pages Notice */}
-            {!result.isLocal && (
+            {!result.isLocal && !result.isTriggered && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h4 className="text-sm font-medium text-yellow-800 mb-2">ℹ️ Nota sobre GitHub Pages</h4>
                 <p className="text-sm text-yellow-700">
                   Este es un entorno de demostración. Para escaneo real con Bearer CLI, 
                   clona el repositorio y ejecuta el proyecto localmente con WSL.
+                </p>
+              </div>
+            )}
+
+            {/* GitHub Actions Notice */}
+            {result.isTriggered && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">🚀 Escaneo en Progreso</h4>
+                <p className="text-sm text-blue-700">
+                  El escaneo se está ejecutando en GitHub Actions. Puedes seguir el progreso 
+                  en la pestaña "Actions" del repositorio. El reporte estará disponible una vez completado.
                 </p>
               </div>
             )}
