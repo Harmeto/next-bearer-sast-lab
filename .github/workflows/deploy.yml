@@ -55,9 +55,17 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          
+          # Fetch latest changes and pull before committing
+          git fetch origin
+          git pull origin main || git pull origin main --allow-unrelated-histories || true
+          
+          # Add and commit the scan results
           git add public/project-scan-report.html public/scan-info.json
           git commit -m "Update security scan report $(date -u +%Y-%m-%dT%H:%M:%SZ)" || exit 0
-          git push
+          
+          # Push the changes
+          git push origin main
         
       - name: Build
         run: npm run build
