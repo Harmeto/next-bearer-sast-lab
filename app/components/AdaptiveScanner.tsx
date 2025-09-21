@@ -105,30 +105,24 @@ export default function AdaptiveScanner() {
           isLocal: true
         });
       } else {
-        // Obtener el reporte del proyecto que ya existe
-        try {
-          const response = await fetch('/api/scan-report?type=project');
-          
-          if (response.ok) {
-            const data = await response.json();
-            setResult({
-              success: true,
-              message: "Reporte de seguridad del proyecto cargado exitosamente",
-              reportUrl: data.html ? `data:text/html;base64,${btoa(data.html)}` : undefined,
-              command: `bearer scan . --format html --output project-scan-report.html`,
-              isLocal: false,
-              isTriggered: false,
-              scanInfo: data.scanInfo
-            });
-            return;
-          } else {
-            throw new Error('No se pudo cargar el reporte del proyecto');
+        // Para GitHub Pages, abrir el reporte estático
+        window.open('/report.html', '_blank');
+        setResult({
+          success: true,
+          message: "Reporte de seguridad del proyecto abierto en nueva ventana",
+          reportUrl: '/report.html',
+          command: `bearer scan . --format html --output project-scan-report.html`,
+          isLocal: false,
+          isTriggered: false,
+          scanInfo: {
+            repoUrl: 'https://github.com/Harmeto/next-bearer-sast-lab',
+            branch: 'main',
+            scanDate: new Date().toISOString(),
+            status: 'completed',
+            type: 'project'
           }
-        } catch (error) {
-          console.error('Error loading project report:', error);
-          setError('No se pudo cargar el reporte de seguridad del proyecto. El escaneo puede estar en progreso.');
-          return;
-        }
+        });
+        return;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
