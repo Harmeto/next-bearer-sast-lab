@@ -38,6 +38,12 @@ export default function Navigation() {
       description: 'Escanea repositorios'
     },
     {
+      href: '/report',
+      label: 'Reporte',
+      icon: '📊',
+      description: 'Ver reporte de seguridad'
+    },
+    {
       href: '/comparison',
       label: 'Comparación',
       icon: '⚖️',

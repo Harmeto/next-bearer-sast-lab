@@ -105,12 +105,12 @@ export default function AdaptiveScanner() {
           isLocal: true
         });
       } else {
-        // Para GitHub Pages, abrir el reporte estático
-        window.open('/report.html', '_blank');
+        // Para GitHub Pages, abrir el reporte en la página de Next.js
+        window.open('/report', '_blank');
         setResult({
           success: true,
           message: "Reporte de seguridad del proyecto abierto en nueva ventana",
-          reportUrl: '/report.html',
+          reportUrl: '/report',
           command: `bearer scan . --format html --output project-scan-report.html`,
           isLocal: false,
           isTriggered: false,
