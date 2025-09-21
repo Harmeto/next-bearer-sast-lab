@@ -10,6 +10,10 @@ interface ScanResult {
   command?: string;
   isLocal?: boolean;
   isTriggered?: boolean;
+  debug?: {
+    hasToken: boolean;
+    tokenLength: number;
+  };
 }
 
 export default function AdaptiveScanner() {
@@ -104,23 +108,30 @@ export default function AdaptiveScanner() {
             body: JSON.stringify({ repoUrl, branch })
           });
 
+          const data = await response.json();
+          console.log('Trigger scan response:', data);
+
           if (response.ok) {
-            const data = await response.json();
             setResult({
               success: true,
               message: data.message,
               reportUrl: data.statusUrl,
               command: `bearer scan ${repoUrl} --format html --output security-report.html`,
               isLocal: false,
-              isTriggered: true
+              isTriggered: true,
+              debug: data.debug
             });
             
             // Polling para verificar cuando el reporte esté listo
             pollForReport();
             return;
+          } else {
+            throw new Error(data.error || 'Error al activar el escaneo');
           }
         } catch (error) {
-          console.log('API trigger failed, falling back to simulation');
+          console.error('API trigger failed:', error);
+          setError(error instanceof Error ? error.message : 'Error al activar el escaneo');
+          return;
         }
 
         // Fallback a simulación si la API no está disponible
@@ -410,6 +421,15 @@ export default function AdaptiveScanner() {
                   El escaneo se está ejecutando en GitHub Actions. Puedes seguir el progreso 
                   en la pestaña "Actions" del repositorio. El reporte estará disponible una vez completado.
                 </p>
+                {result.debug && (
+                  <div className="mt-3 p-2 bg-gray-100 rounded text-xs">
+                    <strong>Debug Info:</strong>
+                    <br />
+                    Token configurado: {result.debug.hasToken ? 'Sí' : 'No'}
+                    <br />
+                    Longitud del token: {result.debug.tokenLength}
+                  </div>
+                )}
               </div>
             )}
           </div>

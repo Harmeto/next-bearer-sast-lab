@@ -44,6 +44,12 @@ export default function Navigation() {
       description: 'Bearer CLI vs SonarQube'
     },
     {
+      href: '/setup',
+      label: 'Configuración',
+      icon: '⚙️',
+      description: 'Configurar el scanner'
+    },
+    {
       href: '/docs',
       label: 'Documentación',
       icon: '📖',
