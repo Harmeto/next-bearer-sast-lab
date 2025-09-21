@@ -14,11 +14,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  scan-and-build:
+  scan-and-commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,6 +68,24 @@ jobs:
           
           # Push the changes
           git push origin main
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: scan-and-commit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
         
       - name: Build
         run: npm run build
@@ -85,7 +105,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: scan-and-build
+    needs: build-and-deploy
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
