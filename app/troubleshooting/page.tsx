@@ -192,6 +192,58 @@ swap=2GB`}
                     </div>
                   </div>
 
+                  {/* Error: REGDB_E_CLASSNOTREG */}
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-red-800 mb-3">
+                      ❌ Error: "Wsl/CallMsi/REGDB_E_CLASSNOTREG"
+                    </h3>
+                    <p className="text-red-700 mb-4">
+                      <strong>Síntoma:</strong> Al ejecutar <code>wsl</code> en PowerShell obtienes el error: <code>Class not registered Error code: Wsl/CallMsi/REGDB_E_CLASSNOTREG</code>
+                    </p>
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-red-800">Solución 1: Cambiar a WSL2</h4>
+                      <CodeBlock
+                        code={`# Verificar versión actual de WSL
+wsl -l -v
+
+# Cambiar a WSL2 como versión por defecto
+wsl --set-default-version 2
+
+# Si tienes distribuciones instaladas, convertir a WSL2
+wsl --set-version Ubuntu 2`}
+                        title="Cambio a WSL2"
+                      />
+                      
+                      <h4 className="font-medium text-red-800">Solución 2: Reinstalación Manual de WSL</h4>
+                      <CodeBlock
+                        code={`# 1. Descargar e instalar WSL manualmente
+# Descargar desde: https://github.com/microsoft/WSL/releases/download/2.3.24/wsl.2.3.24.0.x64.msi
+
+# 2. Ejecutar PowerShell como administrador
+# 3. Cambiar a WSL2
+wsl --set-default-version 2
+
+# 4. Instalar Ubuntu
+wsl --install -d Ubuntu
+
+# 5. Configurar usuario (usar nombre en minúsculas)
+# 6. Actualizar paquetes
+sudo apt update`}
+                        title="Reinstalación Completa"
+                      />
+                      
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h5 className="font-medium text-yellow-800 mb-2">⚠️ Notas Importantes:</h5>
+                        <ul className="text-yellow-700 text-sm space-y-1 list-disc list-inside">
+                          <li>Reinicia PowerShell como administrador después de instalar WSL</li>
+                          <li>El nombre de usuario debe estar en minúsculas</li>
+                          <li>Si tienes Docker Desktop, reinícialo después de la instalación</li>
+                          <li>Verifica que todas las características de Windows estén habilitadas</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Best practices */}
                   <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-green-800 mb-3">
