@@ -36,12 +36,7 @@ jobs:
         with:
           path: '.'
           format: html
-          skip-path: 
-            - node_modules
-            - public
-            - reports
-            - .next
-            - .git
+          skip-path: ["node_modules", "public", "reports", ".next", ".git"]
           output: 'reports/$(git rev-parse HEAD).html'
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
