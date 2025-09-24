@@ -50,3 +50,6 @@ security-reports/
 
 # OS
 Thumbs.db
+
+# files to ignore
+guion-presentacion.md

@@ -1,50 +1,41 @@
-name: Bearer SAST (HTML)
+name: Bearer Security Scan
 
 on:
   push:
     branches:
-      - "**"
-  create:
-    branches:
-      - "**"
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
+  security-events: write
+  actions: read
 
 jobs:
-  scan:
-    if: github.event_name != 'create' || github.event.ref_type == 'branch'
+  security-scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (full history)
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Ensure reports dir
-        run: mkdir -p reports
-
-      - name: Run Bearer (HTML)
+      # Escaneo con formato SARIF para GitHub Security
+      - name: Run Bearer Security Scan
         uses: bearer/bearer-action@v2
         with:
-          format: html
-          output: reports/${{ github.sha }}.html
+          format: sarif
+          output: results.sarif
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
+          diff: ${{ github.event_name == 'pull_request' }}
 
-      - name: Upload report artifact
+      # Upload SARIF results to GitHub Security tab
+      - name: Upload SARIF to GitHub Security
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          name: bearer-report-${{ github.sha }}
-          path: reports/${{ github.sha }}.html
-
-      - name: Commit report into repo (optional)
-        if: ${{ always() && github.event_name == 'push' }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports/${{ github.sha }}.html
-          git commit -m "chore(security): Bearer HTML report for ${{ github.sha }} [skip ci]" || echo "No changes"
-          git push
+          sarif_file: results.sarif
