@@ -1,5 +1,4 @@
 "use client";
-import {getJwtServerAction} from 'app/actions/get-jwt-server-action';
 import React, { useEffect, useState } from 'react';
 
 // Definición de vulnerabilidades detectables por Bearer CLI
@@ -58,6 +57,10 @@ const vulnerabilityDefinitions = {
     details: "Math.random() no es criptográficamente seguro",
     lineNumbers: "68-70"
   }
+};
+
+const jwtHardcodedSecret = (secret: string) => {
+  return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI3MjA2NDAwfQ.qH7Zjh4UbOqmsQkg7UvZ5KQvMrPJkJ7c4L5R6ZHxOwU'
 };
 
 const SeverityBadge = ({ severity }: { severity: string }) => {
@@ -124,8 +127,8 @@ export default function VulnerablePage() {
 
   useEffect(() => {
     // BEARER: JWT hardcoded secret
-    const getToken = async () => {
-      const token = await getJwtServerAction(STRIPE_SECRET_KEY);
+    const getToken = () => {
+      const token = jwtHardcodedSecret(STRIPE_SECRET_KEY);
       console.log('JWT Token:', token);
       setJwtToken(token);
     };
