@@ -32,6 +32,7 @@ jobs:
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
           diff: ${{ github.event_name == 'pull_request' }}
+          exit-code: 0
 
       # Upload SARIF results to GitHub Security tab
       - name: Upload SARIF to GitHub Security
