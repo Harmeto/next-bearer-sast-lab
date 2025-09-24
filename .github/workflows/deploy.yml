@@ -36,8 +36,8 @@ jobs:
         with:
           path: '.'
           format: html
-          skip-path: ["node_modules", "public", "reports", ".next", ".git"]
           output: 'reports/$(git rev-parse HEAD).html'
+          args: --skip-path node_modules,public,reports,.next,.git
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
           exit-code: 0

@@ -29,7 +29,7 @@ jobs:
         with:
           format: sarif
           output: results.sarif
-          skip-path: ["node_modules", "public", "reports", ".next", ".git"]
+          args: --skip-path node_modules,public,reports,.next,.git
           scanner: sast,secrets
           severity: critical,high,medium,low,warning
           diff: ${{ github.event_name == 'pull_request' }}
