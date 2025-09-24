@@ -13,16 +13,19 @@
     "start": "next start",
     "export": "next build && next export",
     "deploy": "npm run build && touch out/.nojekyll",
+    "generate-reports-json": "node scripts/generate-reports-json.mjs",
     "scan:init": "node scripts/generate-initial-report.mjs",
     "scan:example": "node scripts/scan-repo.mjs https://github.com/Harmeto/menv_auth master"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "24.5.2",
     "@types/react": "19.1.13",
     "autoprefixer": "^10.4.21",

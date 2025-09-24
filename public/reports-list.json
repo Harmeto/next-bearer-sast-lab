@@ -1,0 +1,168 @@
+{
+  "success": true,
+  "reports": [
+    {
+      "id": "06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a",
+      "filename": "06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a.html",
+      "size": 434208,
+      "created": "2025-09-24T00:32:53.061Z",
+      "modified": "2025-09-24T00:32:53.061Z",
+      "url": "/reports/06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a.html"
+    },
+    {
+      "id": "$(git rev-parse HEAD)",
+      "filename": "$(git rev-parse HEAD).html",
+      "size": 1379481,
+      "created": "2025-09-22T07:22:41.572Z",
+      "modified": "2025-09-24T00:32:53.060Z",
+      "url": "/reports/$(git rev-parse HEAD).html"
+    },
+    {
+      "id": "49e439184e683b42eee9180fa38ae9bda22b63cd",
+      "filename": "49e439184e683b42eee9180fa38ae9bda22b63cd.html",
+      "size": 149074,
+      "created": "2025-09-24T00:29:34.318Z",
+      "modified": "2025-09-24T00:29:34.318Z",
+      "url": "/reports/49e439184e683b42eee9180fa38ae9bda22b63cd.html"
+    },
+    {
+      "id": "initial",
+      "filename": "initial.html",
+      "size": 92042,
+      "created": "2025-09-22T07:22:41.580Z",
+      "modified": "2025-09-22T07:22:41.580Z",
+      "url": "/reports/initial.html"
+    },
+    {
+      "id": "f4fa3c4e0b8a9ba2f4a630588cb1d4af7d2cc344",
+      "filename": "f4fa3c4e0b8a9ba2f4a630588cb1d4af7d2cc344.html",
+      "size": 33647,
+      "created": "2025-09-22T07:22:41.578Z",
+      "modified": "2025-09-22T07:22:41.579Z",
+      "url": "/reports/f4fa3c4e0b8a9ba2f4a630588cb1d4af7d2cc344.html"
+    },
+    {
+      "id": "f6423a9e062d2232ccb27fce7331dae1c2ecd6c1",
+      "filename": "f6423a9e062d2232ccb27fce7331dae1c2ecd6c1.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.579Z",
+      "modified": "2025-09-22T07:22:41.579Z",
+      "url": "/reports/f6423a9e062d2232ccb27fce7331dae1c2ecd6c1.html"
+    },
+    {
+      "id": "d50191b902faca86f86599f5911600d20e303d4b",
+      "filename": "d50191b902faca86f86599f5911600d20e303d4b.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.578Z",
+      "modified": "2025-09-22T07:22:41.578Z",
+      "url": "/reports/d50191b902faca86f86599f5911600d20e303d4b.html"
+    },
+    {
+      "id": "d8bae2470d6a4734cb1dab7fd8b4466baeeecafc",
+      "filename": "d8bae2470d6a4734cb1dab7fd8b4466baeeecafc.html",
+      "size": 32071,
+      "created": "2025-09-22T07:22:41.578Z",
+      "modified": "2025-09-22T07:22:41.578Z",
+      "url": "/reports/d8bae2470d6a4734cb1dab7fd8b4466baeeecafc.html"
+    },
+    {
+      "id": "a07c24e8cbac92c302335ba08156b3563bafb522",
+      "filename": "a07c24e8cbac92c302335ba08156b3563bafb522.html",
+      "size": 27388,
+      "created": "2025-09-22T07:22:41.577Z",
+      "modified": "2025-09-22T07:22:41.577Z",
+      "url": "/reports/a07c24e8cbac92c302335ba08156b3563bafb522.html"
+    },
+    {
+      "id": "a9e7c4ea81ebd808191a94179e9340ee7c33ed04",
+      "filename": "a9e7c4ea81ebd808191a94179e9340ee7c33ed04.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.577Z",
+      "modified": "2025-09-22T07:22:41.577Z",
+      "url": "/reports/a9e7c4ea81ebd808191a94179e9340ee7c33ed04.html"
+    },
+    {
+      "id": "c78cd1d849a52ec27947be190c03ee42bd6be911",
+      "filename": "c78cd1d849a52ec27947be190c03ee42bd6be911.html",
+      "size": 32071,
+      "created": "2025-09-22T07:22:41.577Z",
+      "modified": "2025-09-22T07:22:41.577Z",
+      "url": "/reports/c78cd1d849a52ec27947be190c03ee42bd6be911.html"
+    },
+    {
+      "id": "88ac4fb87c915130ea7843136fe30178f1f5c1f8",
+      "filename": "88ac4fb87c915130ea7843136fe30178f1f5c1f8.html",
+      "size": 24265,
+      "created": "2025-09-22T07:22:41.576Z",
+      "modified": "2025-09-22T07:22:41.576Z",
+      "url": "/reports/88ac4fb87c915130ea7843136fe30178f1f5c1f8.html"
+    },
+    {
+      "id": "8a03dd982170baf35e5f208c1e8f3e3ad6383f43",
+      "filename": "8a03dd982170baf35e5f208c1e8f3e3ad6383f43.html",
+      "size": 33647,
+      "created": "2025-09-22T07:22:41.576Z",
+      "modified": "2025-09-22T07:22:41.576Z",
+      "url": "/reports/8a03dd982170baf35e5f208c1e8f3e3ad6383f43.html"
+    },
+    {
+      "id": "8b6c8312605343c693a9fe6771dc8beb20bc51d6",
+      "filename": "8b6c8312605343c693a9fe6771dc8beb20bc51d6.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.576Z",
+      "modified": "2025-09-22T07:22:41.576Z",
+      "url": "/reports/8b6c8312605343c693a9fe6771dc8beb20bc51d6.html"
+    },
+    {
+      "id": "5fa8d275934ea6297c681bb7de77ec0e0d5843e2",
+      "filename": "5fa8d275934ea6297c681bb7de77ec0e0d5843e2.html",
+      "size": 33647,
+      "created": "2025-09-22T07:22:41.575Z",
+      "modified": "2025-09-22T07:22:41.575Z",
+      "url": "/reports/5fa8d275934ea6297c681bb7de77ec0e0d5843e2.html"
+    },
+    {
+      "id": "7f493a01cc5a697fb7874e2209c892c9f700f623",
+      "filename": "7f493a01cc5a697fb7874e2209c892c9f700f623.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.575Z",
+      "modified": "2025-09-22T07:22:41.575Z",
+      "url": "/reports/7f493a01cc5a697fb7874e2209c892c9f700f623.html"
+    },
+    {
+      "id": "0ef3b1a51747561bb98d5c5a8afc34983906e1db",
+      "filename": "0ef3b1a51747561bb98d5c5a8afc34983906e1db.html",
+      "size": 33647,
+      "created": "2025-09-22T07:22:41.573Z",
+      "modified": "2025-09-22T07:22:41.574Z",
+      "url": "/reports/0ef3b1a51747561bb98d5c5a8afc34983906e1db.html"
+    },
+    {
+      "id": "2c87f64530d464cfac840b3cd31a96911b9eaca7",
+      "filename": "2c87f64530d464cfac840b3cd31a96911b9eaca7.html",
+      "size": 18848,
+      "created": "2025-09-22T07:22:41.574Z",
+      "modified": "2025-09-22T07:22:41.574Z",
+      "url": "/reports/2c87f64530d464cfac840b3cd31a96911b9eaca7.html"
+    },
+    {
+      "id": "5f11462b6f593ac1cdf5f44bfc4ba2358af27d05",
+      "filename": "5f11462b6f593ac1cdf5f44bfc4ba2358af27d05.html",
+      "size": 28956,
+      "created": "2025-09-22T07:22:41.574Z",
+      "modified": "2025-09-22T07:22:41.574Z",
+      "url": "/reports/5f11462b6f593ac1cdf5f44bfc4ba2358af27d05.html"
+    },
+    {
+      "id": "0dc1599fb2a94df73726622db0dda9ef2385ae2b",
+      "filename": "0dc1599fb2a94df73726622db0dda9ef2385ae2b.html",
+      "size": 32091,
+      "created": "2025-09-22T07:22:41.573Z",
+      "modified": "2025-09-22T07:22:41.573Z",
+      "url": "/reports/0dc1599fb2a94df73726622db0dda9ef2385ae2b.html"
+    }
+  ],
+  "total": 20,
+  "generated": "2025-09-24T01:23:53.353Z",
+  "environment": "development"
+}

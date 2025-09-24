@@ -8,7 +8,9 @@ scan:
   scanner:
     - sast
     - secrets
-  skip-path:
+  skip-path: 
     - node_modules
+    - public
+    - reports
     - .next
     - .git

@@ -20,10 +20,10 @@ export default function Navigation() {
 
   const navItems = [
     {
-      href: '/',
-      label: 'Inicio',
-      icon: '🏠',
-      description: 'Página principal'
+      href: '/examples',
+      label: 'Ejemplos',
+      icon: '🧪',
+      description: 'Ejemplos de vulnerabilidades'
     },
     {
       href: '/tutorial',
