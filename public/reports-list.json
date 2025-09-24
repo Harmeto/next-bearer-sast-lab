@@ -2,6 +2,22 @@
   "success": true,
   "reports": [
     {
+      "id": "$(git rev-parse HEAD)",
+      "filename": "$(git rev-parse HEAD).html",
+      "size": 60939,
+      "created": "2025-09-22T07:22:41.572Z",
+      "modified": "2025-09-24T12:56:10.976Z",
+      "url": "/reports/$(git rev-parse HEAD).html"
+    },
+    {
+      "id": "initial",
+      "filename": "initial.html",
+      "size": 63962,
+      "created": "2025-09-24T02:00:45.714Z",
+      "modified": "2025-09-24T02:50:12.619Z",
+      "url": "/reports/initial.html"
+    },
+    {
       "id": "06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a",
       "filename": "06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a.html",
       "size": 434208,
@@ -10,28 +26,12 @@
       "url": "/reports/06aa66b2c0315dc0e96a8e3f1caa57cd861ed05a.html"
     },
     {
-      "id": "$(git rev-parse HEAD)",
-      "filename": "$(git rev-parse HEAD).html",
-      "size": 1379481,
-      "created": "2025-09-22T07:22:41.572Z",
-      "modified": "2025-09-24T00:32:53.060Z",
-      "url": "/reports/$(git rev-parse HEAD).html"
-    },
-    {
       "id": "49e439184e683b42eee9180fa38ae9bda22b63cd",
       "filename": "49e439184e683b42eee9180fa38ae9bda22b63cd.html",
       "size": 149074,
       "created": "2025-09-24T00:29:34.318Z",
       "modified": "2025-09-24T00:29:34.318Z",
       "url": "/reports/49e439184e683b42eee9180fa38ae9bda22b63cd.html"
-    },
-    {
-      "id": "initial",
-      "filename": "initial.html",
-      "size": 92042,
-      "created": "2025-09-22T07:22:41.580Z",
-      "modified": "2025-09-22T07:22:41.580Z",
-      "url": "/reports/initial.html"
     },
     {
       "id": "f4fa3c4e0b8a9ba2f4a630588cb1d4af7d2cc344",
@@ -163,6 +163,6 @@
     }
   ],
   "total": 20,
-  "generated": "2025-09-24T01:23:53.353Z",
+  "generated": "2025-09-24T12:56:50.273Z",
   "environment": "development"
 }

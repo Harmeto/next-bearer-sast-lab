@@ -416,9 +416,12 @@ security_scan:
                     />
                   </div>
 
-                  {/* Azure DevOps */}
+                  {/* Azure DevOps - Ejemplo Simple */}
                   <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-cyan-800 mb-2">☁️ Azure DevOps</h4>
+                    <h4 className="font-semibold text-cyan-800 mb-2">☁️ Azure DevOps (Ejemplo Básico)</h4>
+                    <p className="text-sm text-cyan-700 mb-3">
+                      Ejemplo simple usando Docker para ejecutar Bearer CLI.
+                    </p>
                     <CodeBlock
                       code={`# azure-pipelines.yml
 trigger:
@@ -450,8 +453,227 @@ stages:
         pathToPublish: '$(System.DefaultWorkingDirectory)/security-report.sarif'
         artifactName: 'security-report'
         publishLocation: 'Container'`}
-                      title="Azure DevOps"
+                      title="Azure DevOps (Docker)"
                     />
+                  </div>
+
+                  {/* Azure DevOps - Pipeline Completo */}
+                  <div className="bg-cyan-100 border border-cyan-300 rounded-lg p-4">
+                    <h4 className="font-semibold text-cyan-900 mb-2">🔧 Azure DevOps (Pipeline Avanzado)</h4>
+                    <p className="text-sm text-cyan-800 mb-3">
+                      Pipeline completo con instalación nativa de Bearer CLI, múltiples formatos de salida y gestión avanzada de resultados.
+                    </p>
+                    <CodeBlock
+                      code={`# azure-pipelines.yml
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger: none
+
+resources:
+  - repo: self
+
+# Se definen variables, importante considerar las variables de entorno, ya que para los test unitarios se necesitaran
+variables:
+  tag: '$(Build.BuildId)'
+  versionAPP: none # Esta variable se utilizara para rescatar la versión desde el package.json
+  
+stages:
+  - stage: SecurityScan
+    displayName: Security Analysis
+    jobs:
+      - job: BearerScan
+        displayName: Bearer Security Scan
+        pool:
+          name: SAG
+        steps:
+          # Instalación de Bearer CLI
+          - task: CmdLine@2
+            displayName: 'Instalar Bearer CLI'
+            inputs:
+              script: |
+                curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+                bearer version
+          
+          # Ejecutar análisis de seguridad con Bearer
+          - task: CmdLine@2
+            displayName: 'Ejecutar Bearer Security Scan'
+            inputs:
+              script: |
+                bearer scan . \
+                  --format sarif \
+                  --output results.sarif \
+                  --scanner sast,secrets \
+                  --severity critical,high,medium,low,warning \
+                  --skip-path node_modules,public,reports,.next,.git \
+                  --exit-code 0
+                
+                # Generar también formato JUnit para Azure DevOps
+                bearer scan . \
+                  --format junit \
+                  --output bearer-junit.xml \
+                  --scanner sast,secrets \
+                  --severity critical,high,medium,low,warning \
+                  --skip-path node_modules,public,reports,.next,.git \
+                  --exit-code 0
+            continueOnError: true # Continúa aunque encuentre vulnerabilidades
+          
+          # Publicar resultados de Bearer como Test Results
+          - task: PublishTestResults@2
+            displayName: 'Publicar Resultados Bearer'
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'bearer-junit.xml'
+              testRunTitle: 'Bearer Security Analysis'
+              failTaskOnFailedTests: false
+          
+          # Publicar resultados SARIF para la pestaña Scans (requiere SARIF SAST Scans Tab extension)
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publicar SARIF para Scans Tab'
+            condition: always()
+            inputs:
+              PathtoPublish: 'results.sarif'
+              ArtifactName: 'CodeAnalysisLogs'
+          
+          # Copiar reportes a artifacts
+          - task: CopyFiles@2
+            displayName: 'Copiar Reportes Bearer'
+            condition: always()
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)'
+              Contents: |
+                results.sarif
+                bearer-junit.xml
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/security-reports'
+          
+          # Publicar artifacts con reportes de seguridad
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publicar Reportes de Seguridad'
+            condition: always()
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/security-reports'
+              ArtifactName: 'security-reports'
+
+  - stage: Build
+    displayName: Build image
+    dependsOn: SecurityScan
+    condition: succeeded('SecurityScan') # Solo ejecuta si el scan fue exitoso
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          name: SAG
+          #vmImage: ubuntu-latest
+        steps:
+          - task: CmdLine@2
+            displayName: 'Limpieza de NPM'
+            inputs:
+              script: npm cache clean --force
+            # Se copia el package.json a la carpeta de artifact para extraer la versión en etapas posteriores
+            # Con esto se genera la autenticación al repo privado de Azure Devops en el archivo .npmrc
+          - task: npmAuthenticate@0
+            displayName: 'Autenticacion NPM privado'
+            inputs:
+              workingFile: '.npmrc'
+          #  # Se instalan dependencias del proyecto
+          #- task: Npm@1
+          #  displayName: 'Instalar dependencias'
+          #  inputs:
+          #    command: 'install'
+          #    workingDir: '$(System.DefaultWorkingDirectory)'
+            # Se ejecutan los test unitarios
+          # - task: Npm@1
+          # displayName: 'Ejecutar pruebas'
+          # inputs:
+          # command: 'custom'
+          # workingDir: '$(System.DefaultWorkingDirectory)'
+          # customCommand: 'run test:ci'
+          # customRegistry: 'useFeed'
+          # customFeed: 'ef63d3aa-e246-4765-bb93-44cc968fdd41'
+          # # Se ejecuta el coverage
+          # - task: PublishTestResults@2
+          # displayName: Publicar Pruebas
+          # condition: succeededOrFailed()
+          # inputs:
+          # testResultsFormat: 'JUnit'
+          # testResultsFiles: '$(System.DefaultWorkingDirectory)/junit.xml'
+          # # Se publica el coverage
+          # - task: PublishCodeCoverageResults@1
+          # displayName: 'Publicar Cobertura'
+          # inputs:
+          # codeCoverageTool: 'Cobertura'
+          # summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+          # # Se obtiene la versión desde el package.json y se setea en una variable
+          - task: CmdLine@2
+            displayName: 'Obtencion de version y seteo de variable'
+            inputs:
+              script: |
+                npmVersionString=$(node -p "require('./package.json').version")
+                echo $npmVersionString
+                echo "##vso[task.setvariable variable=versionAPP]$npmVersionString"
+            # Se copia el package.json a la carpeta de artifact para extraer la versión en etapas posteriores
+          - task: CopyFiles@1
+            displayName: 'Copiar package.json y deploy-openshift.yaml'
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: |
+                package.json
+                deploy-openshift.yaml
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+            # Se genera la imagen y se sube al repositorio de Azure
+          - task: Docker@2
+            displayName: Construir la imagen y subirla a Azure
+            inputs:
+              containerRegistry: 'ACRMICSRV'
+              repository: '$(Build.Repository.Name)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+              tags: '$(versionAPP)'
+            # Se actualiza el BuildName con la versión del package.json
+          - task: PowerShell@2
+            displayName: 'Actualización BuildName'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $BuildName = '$(Build.BuildNumber)'+'_v'+'$(versionAPP)'
+                Write-Host "##vso[build.updatebuildnumber]$BuildName"
+            # Se publica el artifact
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publicar Artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'config'
+
+          #- task: MicrosoftSecurityDevOps@1
+          #  inputs:
+          #    command: 'run'`}
+                      title="Azure DevOps Pipeline Completo"
+                    />
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+                      <h5 className="font-semibold text-yellow-800 mb-2">⚠️ Requisitos para el Pipeline Avanzado</h5>
+                      <div className="text-sm text-yellow-700 space-y-2">
+                        <p>
+                          <strong>Extensión SARIF SAST Scans Tab:</strong> Para visualizar los resultados SARIF en la pestaña
+                          "Scans" de Azure DevOps, instala la extensión desde el
+                          <a
+                            href="https://marketplace.visualstudio.com/items?itemName=sariftools.scans"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Marketplace de Azure DevOps
+                          </a>.
+                        </p>
+                        <p>
+                          <strong>Configuración del Pool:</strong> Ajusta el nombre del pool (en el ejemplo: 'SAG') según tu configuración.
+                        </p>
+                        <p>
+                          <strong>Configuración del Registro:</strong> Configura las credenciales del registro de contenedores (ACRMICSRV).
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Jenkins */}
